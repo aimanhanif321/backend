@@ -2,5 +2,7 @@ fastapi
 uvicorn[standard]
 python-multipart
 pytest
+gunicorn
 httpx
 fastapi-cache2[redis]
+python-dotenv==1.0.0
