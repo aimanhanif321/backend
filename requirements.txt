@@ -1,8 +1,9 @@
 fastapi
 uvicorn[standard]
-python-multipart
-pytest
-gunicorn
-httpx
-fastapi-cache2[redis]
-python-dotenv==1.0.0
+pydantic
+fastapi-cache2
+redis>=4.5.0
+python-dotenv
+# If your rag/agent depends on additional libs include them, e.g.:
+# qdrant-client
+# openai

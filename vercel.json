@@ -1,18 +1,9 @@
 {
- "version": 2,
- "builds": [
- {
- "src": "server.js",
- "use": "@vercel/node"
- }
- ],
- "routes": [
- {
- "src": "/api/(.*)",
- "dest": "app.py"
- }
- ],
- "env": {
- "DATABASE_URL": "@database_url",
- "API_KEY": "@api_key"
- }}
+  "version": 2,
+  "builds": [
+    { "src": "app/main.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "app/main.py" }
+  ]
+}
