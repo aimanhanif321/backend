@@ -1,30 +1,25 @@
 import os
 import sys
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-from dotenv import load_dotenv
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# ---------- PATH FIX ----------
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Ensure backend folder discoverable
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# ---------- ENV ----------
-load_dotenv()
-
-# ---------- IMPORT AGENT ----------
 try:
-    from rag.agent import agent
-    from agents import Runner
+    from rag.agent import agent, Runner
 except Exception as e:
-    print("AGENT IMPORT FAILED:", e)
+    print("Failed to import rag.agent:")
+    import traceback
+    traceback.print_exc()
     agent = None
     Runner = None
 
-# ---------- APP ----------
-app = FastAPI(title="RAG Backend")
+app = FastAPI()
+
+class ChatbotQueryRequest(BaseModel):
+    query: str
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,29 +29,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class ChatbotQueryRequest(BaseModel):
-    query: str
-
-@app.get("/")
-def root():
-    return {"status": "API running"}
-
 @app.post("/api/v1/chatbot/query")
 async def chatbot_query(request: ChatbotQueryRequest):
-    if agent is None:
+    print("FRONTEND SENT:", request.query.strip())  # remove newline issues
+    if not agent or not Runner:
         return {"error": "RAG agent not available on server."}
 
-    loop = asyncio.get_event_loop()
+    try:
+        # Ensure sync run in executor to avoid async issues
+        import asyncio
+        from concurrent.futures import ThreadPoolExecutor
+        loop = asyncio.get_event_loop()
+        with ThreadPoolExecutor() as pool:
+            result = await loop.run_in_executor(pool, lambda: Runner.run_sync(agent, input=request.query.strip()))
+        final = getattr(result, "final_output", None) or getattr(result, "output", None)
+        print("BACKEND RESPONSE:", final)
+        return {"response": final or "No answer found."}
+    except Exception as e:
+        print("AGENT ERROR:", e)
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
 
-    with ThreadPoolExecutor() as pool:
-        result = await loop.run_in_executor(
-            pool,
-            lambda: Runner.run_sync(agent, input=request.query)
-        )
-
-    return {
-        "response": result.final_output or "No answer found."
-    }
 
 
 
