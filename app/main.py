@@ -23,8 +23,7 @@ class ChatbotQueryRequest(BaseModel):
 
 
 origins = [
-    "http://localhost:8000",
-    "http://localhost:3000",
+    
     "https://ai-humanoid-robotics-book-two.vercel.app",
 ]
 
