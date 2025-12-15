@@ -21,6 +21,16 @@ app = FastAPI()
 class ChatbotQueryRequest(BaseModel):
     query: str
 
+
+origins = [
+    "http://localhost:8000",
+    "http://localhost:3000",
+    "https://ai-humanoid-robotics-book-two.vercel.app",
+]
+
+origins = os.getenv("CORS_ORIGIN", "")
+origins = origins.split(",")  # comma se list me convert
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
