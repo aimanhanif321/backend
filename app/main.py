@@ -47,27 +47,33 @@ app.add_middleware(
 
 @app.post("/api/v1/chatbot/query")
 async def chatbot_query(request: ChatbotQueryRequest):
-    
-    print("FRONTEND SENT:", request.query.strip())  # remove newline issues
+
+    print("FRONTEND SENT:", request.query.strip())
+
     if not agent or not Runner:
         return {"error": "RAG agent not available on server."}
 
     try:
-        # Ensure sync run in executor to avoid async issues
         import asyncio
         from concurrent.futures import ThreadPoolExecutor
+
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor() as pool:
-            result = await loop.run_in_executor(pool, lambda: Runner.run_sync(agent, input=request.query.strip()))
+            result = await loop.run_in_executor(
+                pool,
+                lambda: Runner.run_sync(agent, input=request.query.strip())
+            )
+
         final = getattr(result, "final_output", None) or getattr(result, "output", None)
         print("BACKEND RESPONSE:", final)
+
         return {"response": final or "No answer found."}
+
     except Exception as e:
         print("AGENT ERROR:", e)
         import traceback
         traceback.print_exc()
         return {"error": str(e)}
-
 
 
 
