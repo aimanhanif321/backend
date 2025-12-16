@@ -4,6 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+
+
+app = FastAPI()
+
+class ChatRequest(BaseModel):
+    query: str
+
 # Ensure backend folder discoverable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -40,6 +47,7 @@ app.add_middleware(
 
 @app.post("/api/v1/chatbot/query")
 async def chatbot_query(request: ChatbotQueryRequest):
+    
     print("FRONTEND SENT:", request.query.strip())  # remove newline issues
     if not agent or not Runner:
         return {"error": "RAG agent not available on server."}
