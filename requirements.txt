@@ -4,6 +4,7 @@ pydantic
 fastapi-cache2
 redis>=4.5.0
 python-dotenv
-# If your rag/agent depends on additional libs include them, e.g.:
-# qdrant-client
-# openai
+cohere>=5.20.0
+qdrant-client>=1.16.1
+openai-agents>=0.0.7
+openai>=1.30.0
