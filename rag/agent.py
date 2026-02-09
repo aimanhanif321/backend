@@ -24,7 +24,7 @@ provider = AsyncOpenAI(
 )
 
 model = OpenAIChatCompletionsModel(
-    model="command-r-plus",
+    model="command-a-03-2025",
     openai_client=provider,
 )
 
