@@ -17,14 +17,14 @@ enable_verbose_stdout_logging()
 load_dotenv()
 set_tracing_disabled(disabled=True)
 
-# ---------- MODEL (Gemini via OpenAI-compatible API) ----------
+# ---------- MODEL (Cohere via OpenAI-compatible API) ----------
 provider = AsyncOpenAI(
-    api_key=os.getenv("GEMINI_API_KEY"),
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    api_key=os.getenv("COHERE_API_KEY"),
+    base_url="https://api.cohere.com/compatibility/v1/",
 )
 
 model = OpenAIChatCompletionsModel(
-    model="gemini-2.5-flash-lite",
+    model="command-r-plus",
     openai_client=provider,
 )
 
